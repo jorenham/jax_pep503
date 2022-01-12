@@ -15,6 +15,9 @@ requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 
+[tool.poetry.scripts]
+build = 'jax_pep503.build:build_index'
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
