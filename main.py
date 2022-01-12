@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import re
 from typing import Final
 
@@ -12,13 +13,27 @@ import yarl
 VERSION: Final = "1.0"
 JAX_URL: Final = yarl.URL("https://storage.googleapis.com/jax-releases/")
 PATTERN_XML_KEY = re.compile(r'<Key>(.*?)</Key>')
+RESCRAPE_INTERVAL = timedelta(days=1)
 
 app: Final = FastAPI()
 templates: Final = Jinja2Templates(directory="templates")
 
 
+_last_scrape = datetime.min
+_jaxlib_links = None
+
 
 async def get_jaxlib_links() -> dict[str, str]:
+    global _last_scrape, _jaxlib_links
+
+    if not _jaxlib_links or datetime.now() - _last_scrape > RESCRAPE_INTERVAL:
+        _jaxlib_links = await _get_jaxlib_links()
+        _last_scrape = datetime.now()
+
+    return _jaxlib_links
+
+
+async def _get_jaxlib_links() -> dict[str, str]:
     # TODO cache
     links = {}
 
