@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="pypi:repository-version" content="{{ version }}">
+    <title>Links for {{ name }}</title>
+  </head>
+  <body>
+    <h1>Links for {{ name }}</h1>
+    {% for name, url in links.items() %}<a href="{{ url }}">{{ name }}</a>
+    <br>{% endfor %}
+  </body>
+</html>
