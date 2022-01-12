@@ -2,7 +2,7 @@ import pathlib
 
 from fastapi.testclient import TestClient
 
-from main import app
+from .main import app
 
 HTML_DIR = pathlib.Path('./docs')
 URL_PATHS = '/', '/jaxlib/'
@@ -11,7 +11,7 @@ URL_PATHS = '/', '/jaxlib/'
 client = TestClient(app)
 
 
-def build_index(html_dir: pathlib.Path):
+def build_index(html_dir: pathlib.Path = HTML_DIR):
     html_dir.mkdir(exist_ok=True)
 
     for url_path in URL_PATHS:
@@ -28,4 +28,4 @@ def build_index(html_dir: pathlib.Path):
 
 
 if __name__ == '__main__':
-    build_index(HTML_DIR)
+    build_index()
