@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from main import app
 
-HTML_DIR = pathlib.Path('./html')
+HTML_DIR = pathlib.Path('./docs')
 URL_PATHS = '/', '/jaxlib/'
 
 
