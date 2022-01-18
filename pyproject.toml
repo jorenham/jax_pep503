@@ -6,8 +6,8 @@ authors = ["jorenham <jhammudoglu@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.71.0"
-uvicorn = "^0.16.0"
+fastapi = "^0.72.0"
+uvicorn = "^0.17.0"
 Jinja2 = "^3.0.3"
 httpx = "^0.21.3"
 yarl = "^1.7.2"
