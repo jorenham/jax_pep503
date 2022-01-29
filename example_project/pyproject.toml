@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "jax_pep503_example_project"
+version = "0.1.0"
+description = "Example Poetry project with jax[cuda]"
+authors = ["jorenham <jhammudoglu@gmail.com>"]
+homepage = "https://github.com/jorenham/jax_pep503"
+readme = "README.md"
+packages = [{include = "jax_devices_info.py"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+jax = {extras = ["cuda"], version = "^0.2.27"}
+
+[[tool.poetry.source]]
+name = "jorenham/jax_pep503"
+url = "https://jorenham.github.io/jax_pep503/"
+secondary = true
+
+[tool.poetry.scripts]
+devices = "jax_devices_info:print_devices"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
