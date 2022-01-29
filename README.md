@@ -1,11 +1,30 @@
-# PEP 503 compliant repository index for Jax(lib)
+# PEP 503 repository index for `jax[cuda]`
 
-This makes adding e.g. `jax[cuda]` to your poetry project possible by 
-adding this repository in your `pyproject.toml`:
+*Daily automatically rebuilds*
 
-```toml
-[[tool.poetry.source]]
-name = "jorenham/jax_pep503"
-url = "https://jorenham.github.io/jax_pep503/"
-secondary = true
-```
+## Repository
+
+https://jorenham.github.io/jax_pep503/
+
+## Example: Adding `jax[cuda]` to your [Poetry](https://python-poetry.org/) project
+
+- Add the repository as a secondary source to your `pyproject.toml`:
+
+    ```toml
+    ...
+    
+    [[tool.poetry.source]]
+    name = "jorenham/jax_pep503"
+    url = "https://jorenham.github.io/jax_pep503/"
+    secondary = true
+    
+    ...
+    ```
+
+- Now you can add `jax[cuda]` using:
+
+    ```bash
+    poetry add jax[cuda]
+    ```
+
+See the [example project](example_project) for more details 
