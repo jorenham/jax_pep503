@@ -3,9 +3,11 @@ name = "jax_pep503"
 version = "0.2.0"
 description = "PEP 503 compliant repository for Jax"
 authors = ["Joren Hammudoglu <jhammudoglu@gmail.com>"]
-homepage = "https://github.com/jorenham/jax_pep503"
+homepage = "https://jorenham.github.io/jax_pep503/"
+repository = "https://github.com/jorenham/jax_pep503"
 readme = "README.md"
 exclude = ["example_project"]
+license = "Apache-2.0"
 
 [tool.poetry.urls]
 "GitHub" = "https://github.com/jorenham/jax_pep503"
