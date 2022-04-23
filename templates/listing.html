@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="pypi:repository-version" content="1.0">{# PEP 629 #}
+    <title>{{ title }}</title>
+</head>
+<body>
+{% if heading %}<h1>{{ heading }}</h1>{% endif %}
+{% for name, attrs in links.items() -%}
+    <a{{ attrs|xmlattr }}>{{ name }}</a><br>
+{% endfor -%}
+</body>
+</html>

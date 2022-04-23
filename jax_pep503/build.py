@@ -1,20 +1,32 @@
+import asyncio
 import pathlib
 
 from fastapi.testclient import TestClient
+from mainpy import main
 
-from .main import app
+from jax_pep503.main import app, get_package_links
 
 HTML_DIR = pathlib.Path('./docs')
-URL_PATHS = '/', '/jaxlib/'
 
 
 client = TestClient(app)
 
 
-def build_index(html_dir: pathlib.Path = HTML_DIR):
+def build_index():
+    asyncio.run(_build_index())
+
+
+@main
+async def _build_index(html_dir: pathlib.Path = HTML_DIR):
     html_dir.mkdir(exist_ok=True)
 
-    for url_path in URL_PATHS:
+    url_paths = ['/']
+
+    package_links = await get_package_links()
+    for package in package_links:
+        url_paths.append(f'/{package}/')
+
+    for url_path in url_paths:
         response = client.get(url_path)
         response.raise_for_status()
 
@@ -25,7 +37,3 @@ def build_index(html_dir: pathlib.Path = HTML_DIR):
 
         print(f'{url_path} -> {html_path}')
         html_path.write_bytes(response.content)
-
-
-if __name__ == '__main__':
-    build_index()

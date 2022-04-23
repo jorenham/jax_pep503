@@ -152,6 +152,14 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "mainpy"
+version = "1.0.0"
+description = "Simplify your project's main entrypoint definition with @main"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[[package]]
 name = "markupsafe"
 version = "2.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -288,7 +296,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a1b5c4963be363ba9573fef359e662b7074c466609750381585ee27d76297be5"
+content-hash = "e01e944188f424564d5d899dd7c2f2986467575e89a16759e0c1051e88c16aca"
 
 [metadata.files]
 anyio = [
@@ -338,6 +346,10 @@ idna = [
 jinja2 = [
     {file = "Jinja2-3.1.1-py3-none-any.whl", hash = "sha256:539835f51a74a69f41b848a9645dbdc35b4f20a3b601e2d9a7e22947b15ff119"},
     {file = "Jinja2-3.1.1.tar.gz", hash = "sha256:640bed4bb501cbd17194b3cace1dc2126f5b619cf068a726b98192a0fde74ae9"},
+]
+mainpy = [
+    {file = "mainpy-1.0.0-py3-none-any.whl", hash = "sha256:1810411c9c7d2954f9acd223bf828f64df5bac0d5d93d758a3d9ee817585930d"},
+    {file = "mainpy-1.0.0.tar.gz", hash = "sha256:c878d2a2c12565833ccd3a56467880e6bceedb1d8ef4f2fe2a6d8ec807471605"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.1.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:86b1f75c4e7c2ac2ccdaec2b9022845dbb81880ca318bb7a0a01fbf7813e3812"},
