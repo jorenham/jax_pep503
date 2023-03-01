@@ -9,7 +9,7 @@ packages = [{include = "jax_devices_info.py"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-jax = {extras = ["cuda"], version = "^0.3.7"}
+jax = {extras = ["cuda"], version = "^0.4.4"}
 
 [[tool.poetry.source]]
 name = "jorenham/jax_pep503"
