@@ -1,4 +1,5 @@
 import collections
+import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Final, TypeAlias
@@ -69,7 +70,7 @@ async def _get_links() -> dict[str, _Links]:
             if not await release_data.size:
                 continue
 
-            release = release_data.key
+            release = urllib.parse.unquote(release_data.key)
             ext = Path(release).suffix
             if not ext or ext in ('.html', '.so'):
                 continue
