@@ -1,21 +1,24 @@
 import collections
 from datetime import datetime, timedelta
-import re
 from pathlib import Path
 from typing import Final, TypeAlias
 
+import aioboto3
+import botocore
+import botocore.config
+import yarl
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+
 from fastapi.templating import Jinja2Templates
 
-import httpx
-import yarl
 
+ENDPOINT: Final[str] = 'https://storage.googleapis.com'
+BUCKET: Final[str] = 'jax-releases'
+JAX_URL: Final[yarl.URL] = yarl.URL(ENDPOINT) / BUCKET
 
-JAX_URL: Final = yarl.URL('https://storage.googleapis.com/jax-releases/')
-PATTERN_XML_KEY: Final = re.compile(r'<Key>(.*?)</Key>')
-RESCRAPE_INTERVAL: Final = timedelta(days=1)
 RELEASE_SUFFIXES: Final = frozenset({'.whl', '.gz'})
+RESCRAPE_INTERVAL: Final[timedelta] = timedelta(days=1)
 
 
 app: Final = FastAPI()
@@ -54,27 +57,33 @@ async def get_links() -> dict[str, _Links]:
 async def _get_links() -> dict[str, _Links]:
     links = collections.defaultdict(dict)
 
-    async with httpx.AsyncClient() as client:
-        r: httpx.Response = await client.get(str(JAX_URL))
-        r.raise_for_status()
+    session = aioboto3.Session()
+    config = botocore.config.Config(signature_version=botocore.UNSIGNED)
+    async with session.resource(
+        's3',
+        endpoint_url=ENDPOINT,
+        config=config
+    ) as s3:
+        bucket = await s3.Bucket(BUCKET)
+        async for release_data in bucket.objects.all():
+            if not await release_data.size:
+                continue
 
-        xml = r.text
-        for release in re.findall(PATTERN_XML_KEY, xml):
-            if Path(release).suffix not in RELEASE_SUFFIXES:
+            release = release_data.key
+            ext = Path(release).suffix
+            if not ext or ext in ('.html', '.so'):
                 continue
 
             url = JAX_URL / release
-
             if not (name := url.name):
                 continue
 
             package_name, tag, *tail = name.split('-')
-
             attrs = {'href': str(url)}
 
             if tail:
                 version_raw = tail[0]
-                assert version_raw.startswith('cp')
+                assert version_raw.startswith('cp'), (release, version_raw)
 
                 version = int(version_raw[2]), int(version_raw[3:])
                 version_str = '.'.join(map(str, version))
