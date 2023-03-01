@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jax_pep503"
-version = "0.3.0"
+version = "0.4.0"
 description = "PEP 503 compliant repository for Jax"
 authors = ["Joren Hammudoglu <jhammudoglu@gmail.com>"]
 homepage = "https://jorenham.github.io/jax_pep503/"
@@ -20,6 +20,7 @@ uvicorn = ">=0.17,<1.0"
 Jinja2 = ">=3.0,<4.0"
 yarl = ">=1.7,<2.0"
 mainpy = "^1.0.0"
+httpx = "^0.23.3"
 aioboto3 = "^10.4.0"
 
 [tool.poetry.dev-dependencies]
