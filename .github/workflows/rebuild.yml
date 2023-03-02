@@ -8,14 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '1.4'
 
       - name: Poetry install
         run: poetry install
@@ -24,8 +27,7 @@ jobs:
         run: poetry run build
 
       - name: Publish
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           add: 'docs'
-          branch: master
           message: 'auto daily html build'
