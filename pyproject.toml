@@ -23,8 +23,6 @@ mainpy = "^1.0.0"
 httpx = "^0.23.3"
 aioboto3 = "^10.4.0"
 
-[tool.poetry.dev-dependencies]
-
 [tool.poetry.scripts]
 build = 'jax_pep503.build:build_index'
 
