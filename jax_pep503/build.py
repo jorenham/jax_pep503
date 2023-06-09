@@ -23,9 +23,7 @@ async def _build_index(html_dir: pathlib.Path = HTML_DIR):
     url_paths = ['/']
 
     package_links = await get_package_links()
-    for package in package_links:
-        url_paths.append(f'/{package}/')
-
+    url_paths.extend(f'/{package}/' for package in package_links)
     for url_path in url_paths:
         response = client.get(url_path)
         response.raise_for_status()

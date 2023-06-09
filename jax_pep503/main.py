@@ -35,10 +35,10 @@ _package_links = None
 
 
 async def get_package_links() -> _Links:
-    links = {}
-    for package_name in (await get_links()):
-        links[package_name] = {'href': f'{package_name}/'}
-    return links
+    return {
+        package_name: {'href': f'{package_name}/'}
+        for package_name in (await get_links())
+    }
 
 
 async def get_package_release_links(package_name: str) -> _Links:
