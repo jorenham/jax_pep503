@@ -27,7 +27,7 @@ https://jorenham.github.io/jax_pep503/
 - Now you can add `jax[cuda]` using:
 
     ```bash
-    poetry add --source "jorenham/jax_pep503" jax[cuda]
+    poetry add --source "jax_pep503" jax[cuda]
     ```
 
 See the [example project](example_project) for more details 
