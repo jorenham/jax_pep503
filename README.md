@@ -14,17 +14,20 @@ https://jorenham.github.io/jax_pep503/
     ...
     
     [[tool.poetry.source]]
-    name = "jorenham/jax_pep503"
+    name = "PyPI"
+    priority = "primary"
+
+    [[tool.poetry.source]]
+    name = "jax_pep503"
     url = "https://jorenham.github.io/jax_pep503/"
-    secondary = true
-    
+    priority = "explicit"
     ...
     ```
 
 - Now you can add `jax[cuda]` using:
 
     ```bash
-    poetry add jax[cuda]
+    poetry add --source "jorenham/jax_pep503" jax[cuda]
     ```
 
 See the [example project](example_project) for more details 
