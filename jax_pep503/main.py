@@ -90,6 +90,7 @@ async def _get_links() -> dict[str, _Links]:
                 version_str = '.'.join(map(str, version))
 
                 attrs['data-requires-python'] = version_str
+                attrs['data-gpg-sig'] = 'false'
 
             links[package_name][release] = attrs
 
