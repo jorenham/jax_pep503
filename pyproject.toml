@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "jax_pep503"
 version = "0.4.1"
@@ -15,17 +19,12 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = ">=0.75,<1.0"
-uvicorn = ">=0.17,<1.0"
-Jinja2 = ">=3.0,<4.0"
-yarl = ">=1.7,<2.0"
-mainpy = "^1.0.0"
-httpx = "^0.23.3"
-aioboto3 = "^10.4.0"
+fastapi = ">=0.101,<1.0"
+uvicorn = ">=0.23,<1.0"
+Jinja2 = ">=3.1,<4.0"
+httpx = ">=0.24,<1.0"
+mainpy = "^1.1.0"
+aioboto3 = "^11.3.0"
 
 [tool.poetry.scripts]
 build = 'jax_pep503.build:build_index'
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"

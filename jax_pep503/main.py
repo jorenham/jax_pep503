@@ -1,14 +1,14 @@
 import collections
+import re
 import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Final, TypeAlias
+from typing import Any, Final, TypeAlias
 
 import aioboto3
 import botocore
 import botocore.config
-import yarl
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse
 
 from fastapi.templating import Jinja2Templates
@@ -16,14 +16,28 @@ from fastapi.templating import Jinja2Templates
 
 ENDPOINT: Final[str] = 'https://storage.googleapis.com'
 BUCKET: Final[str] = 'jax-releases'
-JAX_URL: Final[yarl.URL] = yarl.URL(ENDPOINT) / BUCKET
+JAX_URL: Final[str] = f'{ENDPOINT}/{BUCKET}'
 
-RELEASE_SUFFIXES: Final = frozenset({'.whl', '.gz'})
+RELEASE_SUFFIXES: Final[frozenset[str]] = frozenset({'.whl', '.gz'})
 RESCRAPE_INTERVAL: Final[timedelta] = timedelta(days=1)
 
+# https://peps.python.org/pep-0491/#file-format
+WHEEL_FILE_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r'(?P<distribution>\w+)'
+    r'-(?P<version>.+)'
+    r'(?:-(?P<build>\w+))?'
+    r'-(?P<lang_tag>'
+    r'(?P<lang_impl>[a-z]+)'
+    r'(?P<lang_version_major>[234])'
+    r'(?P<lang_version_minor>\d{,2})'
+    r')'
+    r'-(?P<abi_tag>\w+)'
+    r'-(?P<platform_tag>\w+)'
+)
 
-app: Final = FastAPI()
-templates: Final = Jinja2Templates(directory='templates')
+
+app: Final[FastAPI] = FastAPI()
+templates: Final[Jinja2Templates] = Jinja2Templates(directory='templates')
 
 
 _HTMLAttrs: TypeAlias = dict[str, str]
@@ -56,62 +70,78 @@ async def get_links() -> dict[str, _Links]:
 
 
 async def _get_links() -> dict[str, _Links]:
-    links = collections.defaultdict(dict)
+    links: dict[str, _Links] = collections.defaultdict(dict)
 
     session = aioboto3.Session()
     config = botocore.config.Config(signature_version=botocore.UNSIGNED)
+
     async with session.resource(
         's3',
         endpoint_url=ENDPOINT,
         config=config
     ) as s3:
         bucket = await s3.Bucket(BUCKET)
+        
         async for release_data in bucket.objects.all():
             if not await release_data.size:
                 continue
 
             release = urllib.parse.unquote(release_data.key)
-            ext = Path(release).suffix
-            if not ext or ext in ('.html', '.so'):
+            release_path = Path(release)
+
+            release_ext = release_path.suffix
+            if not release_ext or release_ext in {'.html', '.so'}:
                 continue
 
-            url = JAX_URL / release
-            if not (name := url.name):
+            if not (name := release_path.stem):
                 continue
 
-            package_name, tag, *tail = name.split('-')
-            attrs = {'href': str(url)}
+            if not (match := WHEEL_FILE_PATTERN.match(name)):
+                continue
 
-            if tail:
-                version_raw = tail[0]
-                assert version_raw.startswith('cp'), (release, version_raw)
+            groups = match.groupdict()
+            
+            py_version = groups['lang_version_major']
+            if py_version_minor := groups['lang_version_minor']:
+                py_version = f'{py_version}.{py_version_minor}'
 
-                version = int(version_raw[2]), int(version_raw[3:])
-                version_str = '.'.join(map(str, version))
-
-                attrs['data-requires-python'] = version_str
-                attrs['data-gpg-sig'] = 'false'
-
-            links[package_name][release] = attrs
+            links[groups['distribution']][release] = {
+                'href': f'{JAX_URL}/{release}',
+                'data-requires-python': py_version,
+                'data-gpg-sig': 'false',
+            }
 
     return links
 
 
-def render_listing(request: Request, title: str, links: _Links, **context):
-    context = {'request': request, 'title': title, 'links': links} | context
-    return templates.TemplateResponse('listing.html', context)
+def render_listing(
+    request: Request,
+    title: str,
+    links: _Links, 
+    **context: Any,
+) -> Response:
+    return templates.TemplateResponse(  # type: ignore
+        'listing.html', 
+        {'request': request, 'title': title, 'links': links} | context,
+    )
 
 
 @app.get('/', response_class=HTMLResponse)
-async def index(request: Request):
-    links = await get_package_links()
-
-    return render_listing(request, title='Simple index', links=links)
+async def index(request: Request) -> Response:
+    return render_listing(
+        request,
+        title='Simple index', 
+        links=await get_package_links(),
+    )
 
 
 @app.get('/{name}/', response_class=HTMLResponse)
-async def package(request: Request, name: str):
+async def package(request: Request, name: str) -> Response:
     title = f'Links for {name}'
-    links = await get_package_release_links(name)
 
-    return render_listing(request, title=title, heading=title, links=links)
+    return render_listing(
+        request, 
+        title=title,
+        heading=title, 
+        links=await get_package_release_links(name),
+    )
