@@ -69,6 +69,44 @@ async def get_links() -> dict[str, _Links]:
     return _package_links
 
 
+def _parse_release_wheel(name: str) -> _HTMLAttrs | None:
+    if not (match := WHEEL_FILE_PATTERN.match(name)):
+        return
+
+    groups = match.groupdict()
+    
+    py_version = groups['lang_version_major']
+    if py_version_minor := groups['lang_version_minor']:
+        py_version = f'{py_version}.{py_version_minor}'
+
+    return {
+        'href': f'{JAX_URL}/{name}.whl',
+        'data-requires-python': py_version,
+        'data-gpg-sig': 'false',
+    }
+
+
+def _parse_release_tarball(name: str) -> _HTMLAttrs:
+    return {
+        'href': f'{JAX_URL}/{name}.tar.gz',
+        'data-gpg-sig': 'false',
+    }
+
+
+def _parse_release(release: str) -> tuple[str, _HTMLAttrs | None]:
+    path = Path(release)
+    name, ext = path.stem, path.suffix
+    
+    parent = name.split('-')[0]
+    
+    if ext == '.whl':
+        return parent, _parse_release_wheel(name)
+    if ext == '.gz' and name.endswith('.tar'):
+        return parent, _parse_release_tarball(name[-4:])
+
+    return parent, None
+
+
 async def _get_links() -> dict[str, _Links]:
     links: dict[str, _Links] = collections.defaultdict(dict)
 
@@ -87,29 +125,10 @@ async def _get_links() -> dict[str, _Links]:
                 continue
 
             release = urllib.parse.unquote(release_data.key)
-            release_path = Path(release)
 
-            release_ext = release_path.suffix
-            if not release_ext or release_ext in {'.html', '.so'}:
-                continue
-
-            if not (name := release_path.stem):
-                continue
-
-            if not (match := WHEEL_FILE_PATTERN.match(name)):
-                continue
-
-            groups = match.groupdict()
-            
-            py_version = groups['lang_version_major']
-            if py_version_minor := groups['lang_version_minor']:
-                py_version = f'{py_version}.{py_version_minor}'
-
-            links[groups['distribution']][release] = {
-                'href': f'{JAX_URL}/{release}',
-                'data-requires-python': py_version,
-                'data-gpg-sig': 'false',
-            }
+            parent, attrs = _parse_release(release)
+            if attrs:
+                links[parent][release] = attrs
 
     return links
 
