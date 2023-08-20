@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "jax_pep503"
-version = "0.4.1"
+version = "0.4.2"
 description = "PEP 503 compliant repository for Jax"
 authors = ["Joren Hammudoglu <jhammudoglu@gmail.com>"]
 homepage = "https://jorenham.github.io/jax_pep503/"
