@@ -69,7 +69,7 @@ async def get_links() -> dict[str, _Links]:
     return _package_links
 
 
-def _parse_release_wheel(name: str) -> _HTMLAttrs | None:
+def _parse_release_wheel(path: str, name: str) -> _HTMLAttrs | None:
     if not (match := WHEEL_FILE_PATTERN.match(name)):
         return
 
@@ -80,15 +80,15 @@ def _parse_release_wheel(name: str) -> _HTMLAttrs | None:
         py_version = f'{py_version}.{py_version_minor}'
 
     return {
-        'href': f'{JAX_URL}/{name}.whl',
+        'href': f'{JAX_URL}/{path}',
         'data-requires-python': py_version,
         'data-gpg-sig': 'false',
     }
 
 
-def _parse_release_tarball(name: str) -> _HTMLAttrs:
+def _parse_release_tarball(path: str, name: str) -> _HTMLAttrs:
     return {
-        'href': f'{JAX_URL}/{name}.tar.gz',
+        'href': f'{JAX_URL}/{path}',
         'data-gpg-sig': 'false',
     }
 
@@ -100,9 +100,9 @@ def _parse_release(release: str) -> tuple[str, _HTMLAttrs | None]:
     parent = name.split('-')[0]
     
     if ext == '.whl':
-        return parent, _parse_release_wheel(name)
+        return parent, _parse_release_wheel(release, name)
     if ext == '.gz' and name.endswith('.tar'):
-        return parent, _parse_release_tarball(name[-4:])
+        return parent, _parse_release_tarball(release, name[-4:])
 
     return parent, None
 
