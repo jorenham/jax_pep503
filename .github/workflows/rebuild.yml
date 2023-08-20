@@ -3,30 +3,37 @@ name: Rebuild
 on:
   schedule:
     - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
 
 jobs:
-  build:
+  rebuild:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
+      - name: setup poetry
+        run: pipx install poetry
+
+      - name: setup python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
+          cache: poetry
 
-      - name: Run image
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: '1.4'
+      - name: install
+        run: poetry install --sync
 
-      - name: Poetry install
-        run: poetry install
-
-      - name: Build html
+      - name: rebuild
         run: poetry run build
 
-      - name: Publish
+      - name: publish
         uses: EndBug/add-and-commit@v9
         with:
           add: 'docs'
-          message: 'auto daily html build'
+          default_author: github_actions
+          message: 'repository update'
