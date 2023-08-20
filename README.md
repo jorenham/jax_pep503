@@ -6,7 +6,7 @@
 
 https://jorenham.github.io/jax_pep503/
 
-## Example: Adding `jax[cuda]` to your [Poetry](https://python-poetry.org/) project
+## Example: Adding `jax[cuda]` to a [Poetry](https://python-poetry.org/) project
 
 - Add the repository as a secondary source to your `pyproject.toml`:
 
@@ -18,19 +18,21 @@ https://jorenham.github.io/jax_pep503/
     priority = "primary"
 
     [[tool.poetry.source]]
-    name = "jax_pep503"
+    name = "jorenham/jax_pep503"
     url = "https://jorenham.github.io/jax_pep503/"
-    priority = "explicit"
+    priority = "supplemental"
+
+    [tool.poetry.dependencies]
     ...
     ```
 
 - Now you can add `jax[cuda]` using:
 
     ```bash
-    poetry add --source "jax_pep503" jax[cuda]
+    poetry add jax[cuda]
     ```
 
-See the [example project](example_project) for more details 
+See the [example project](example_project) for more details.
 
 ## See also
 
