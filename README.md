@@ -2,6 +2,9 @@
 
 *Daily automatically rebuilds*
 
+> [!IMPORTANT]  
+> The CUDA wheels of JAX are now published on PyPI, so this index will no longer be needed: https://github.com/jax-ml/jax/issues/5410#issuecomment-2591124595
+
 ## Repository
 
 https://jorenham.github.io/jax_pep503/
